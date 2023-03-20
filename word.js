@@ -1,3 +1,4 @@
+
 const wrapper = document.createElement("div")
 wrapper.setAttribute("id", "wrapper")
 document.body.appendChild(wrapper)
@@ -16,6 +17,11 @@ content.setAttribute("id", "content")
 wrapper.appendChild(content)
 
 let toggleState
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	console.log(request)
+	toggleState = request.toggleState
+})
 
 wrapperStyles = {
 	position: "fixed",
@@ -91,7 +97,7 @@ async function placeDiv(word) {
 }
 
 document.addEventListener("selectionchange", (event) => {
-	if (!toggleState) return
+	// if (!toggleState) return
 	s = window.getSelection()
 	if (s && s.toString()) {
 		word = s.toString()
@@ -101,9 +107,4 @@ document.addEventListener("selectionchange", (event) => {
 	} else {
 		hideDiv()
 	}
-})
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	console.log(request)
-	toggleState = request.toggleState
 })
