@@ -1,4 +1,3 @@
-
 const wrapper = document.createElement("div")
 wrapper.setAttribute("id", "wrapper")
 document.body.appendChild(wrapper)
@@ -15,13 +14,6 @@ function showDiv() {
 const content = document.createElement("div")
 content.setAttribute("id", "content")
 wrapper.appendChild(content)
-
-let toggleState
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	console.log(request)
-	toggleState = request.toggleState
-})
 
 wrapperStyles = {
 	position: "fixed",
@@ -96,10 +88,29 @@ async function placeDiv(word) {
 	} catch (error) {}
 }
 
-document.addEventListener("selectionchange", (event) => {
-	// if (!toggleState) return
+let toggleState = false;
+
+chrome.runtime.onMessage.addListener((message) => {
+    toggleState = message.toggleState;
+});
+
+document.addEventListener("selectionchange", async (event) => {
+    if (toggleState) {
+        s = window.getSelection();
+        if (s && s.toString()) {
+            word = s.toString();
+            placeDiv(word);
+            searchWord = word;
+            showDiv();
+        } else {
+            hideDiv();
+        }
+    }
+});
+
+document.addEventListener("selectionchange", async (event) => {
 	s = window.getSelection()
-	if (s && s.toString()) {
+	if (isEnabled && s && s.toString()) {
 		word = s.toString()
 		placeDiv(word)
 		searchWord = word
